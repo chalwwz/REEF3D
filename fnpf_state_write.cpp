@@ -41,6 +41,7 @@ void fnpf_state::write(lexer *p, fdm_fnpf *c, ghostcell *pgc)
     if(p->P15>=1)
     num = printcount;
 
+    if(p->mpirank==4){
     
     // result file
     filename(p,c,pgc,num);
@@ -75,6 +76,6 @@ void fnpf_state::write(lexer *p, fdm_fnpf *c, ghostcell *pgc)
 	
 	
 	result.close();
-	
+	}
 	++printcount;
 }
