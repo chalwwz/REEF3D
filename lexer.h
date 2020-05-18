@@ -65,7 +65,7 @@ public:
 	void ctrlrecv();
 	int maxparacount();
 	void gridsize();
-	void vecsize();
+	void vecsize(ghostcell*);
 	void vellast();
 	void indices_minmax();
 	void lexer_ini();
@@ -274,7 +274,7 @@ public:
     double A440;
     
 	// boundary conditions
-	int B10,B19,B20,B26,B28,B30,B60,B61,B62,B63,B64,B67,B68,B69,B70,B71,B74,B75,B76,B77,B78,B84,B85,B81,B82,B86,B87,B89,B90,B91,B92,B93,B98,B99,B101,B105,B106,B107,B110;
+	int B10,B19,B20,B26,B28,B30,B60,B61,B62,B63,B64,B67,B68,B69,B70,B71,B74,B75,B76,B77,B84,B85,B81,B82,B86,B87,B89,B90,B91,B92,B93,B98,B99,B101,B105,B106,B107,B110;
 	int B121,B136,B139,B180,B191,B192,B210,B240,B241,B242,B243;
 	double B29,B50,B51,B52,B53,B54,B55,B56,B65,B66_1,B66_2,B81_1,B81_2,B81_3,B83,B117,B87_1,B87_2,B88;
 	double B91_1,B91_2,B91_3,B93_1,B93_2,B93_3,B96_1,B96_2,B96_3,B97,B102,B103,B104,B105_1,B105_2,B105_3,B110_d,B119;
@@ -283,7 +283,6 @@ public:
 	double *B69_val,*B69_dist,*B69_b,*B69_x,*B69_y;
 	double *B70_val,*B70_dist,*B70_b,*B70_x,*B70_y;
 	double *B71_val,*B71_dist,*B71_b,*B71_x,*B71_y;
-	double B79,B80;
 	double *B106_b,*B106_x,*B106_y;
     double *B107_xs,*B107_xe,*B107_ys, *B107_ye, *B107_d;
     int B108;
@@ -328,7 +327,7 @@ public:
 	double *C75_x,*C75_z,*C75_a,*C75_s,*C75_l,*C75_v;
 
 	// discretization
-	int D10,D11,D20,D21,D22,D23,D30,D32,D38,D39;
+	int D10,D11,D20,D21,D30,D32,D38,D39;
 	double D29;
 
 	// Free Surface
@@ -364,7 +363,7 @@ public:
 
 	// Heat Options
 	double H1,H2;
-	int H9,H10,H15;
+	int H3,H9,H10,H15;
 	double H50_1,H50_2;
 	double H51,H52,H53,H54,H55,H56;
 	double H57_1,H57_2,H57_3,H57_4;
@@ -435,6 +434,8 @@ public:
     double W11_u,W11_v,W11_w,W12_u,W12_v,W12_w,W13_u,W13_v,W13_w,W14_u,W14_v,W14_w,W15_u,W15_v,W15_w,W16_u,W16_v,W16_w;
     double W20,W21,W22,W31;
 	int W30;
+    int W41;
+    double *W41_xc,*W41_yc,*W41_zs,*W41_ze,*W41_vel,*W41_beta;
     int W90;
     double W95,W96,W97,W98;
     int W101;

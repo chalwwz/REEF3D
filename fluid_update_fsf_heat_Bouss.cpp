@@ -19,41 +19,82 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 --------------------------------------------------------------------
 --------------------------------------------------------------------*/
 
-#include"fluid_update_fsf_comp.h"
+#include"fluid_update_fsf_heat_Bouss.h"
 #include"lexer.h"
 #include"fdm.h"
 #include"ghostcell.h"
+#include"heat.h"
 
-fluid_update_fsf_comp::fluid_update_fsf_comp(lexer *p, fdm* a, ghostcell* pgc) : dx(p->dx),
-												visc_air(p->W4),visc_water(p->W2),ro_water(p->W1)
+fluid_update_fsf_heat_Bouss::fluid_update_fsf_heat_Bouss(lexer *p, fdm* a, ghostcell* pgc, heat *&ppheat) : dx(p->dx)
 {
-    gcval_ro=2;
+    gcval_ro=1;
 	gcval_visc=1;
+
+	visc_2 = p->W4;
+	visc_1 = p->W2;
+	ro_2 = p->W3;
+	ro_1 = p->W1;
+	alpha_air = p->H2;
+	alpha_water = p->H1;
+    
+    if(p->H9==1)
+    {
+    T0_1 = p->H50_1 + 273.0;
+    T0_2 = p->H50_2 + 273.0;
+    }
+    
+    if(p->H9==2)
+    {
+    T0_1 = p->H50_2 + 273.0;
+    T0_2 = p->H50_1 + 273.0;
+    }
+	
+	pheat = ppheat;
+    
 }
 
-fluid_update_fsf_comp::~fluid_update_fsf_comp()
+fluid_update_fsf_heat_Bouss::~fluid_update_fsf_heat_Bouss()
 {
 }
 
-void fluid_update_fsf_comp::start(lexer *p, fdm* a, ghostcell* pgc)
+void fluid_update_fsf_heat_Bouss::start(lexer *p, fdm* a, ghostcell* pgc)
 {
+    
 	double H=0.0;
-	double Hro=0.0;
+	double temp;
 	p->volume1=0.0;
 	p->volume2=0.0;
-	ro_air=p->W3;
-    
+
     if(p->count>iter)
     iocheck=0;
 	iter=p->count;
 
+   //
 	LOOP
 	{
-        epsi = p->F45*(1.0/3.0)*(p->DXN[IP] + p->DYN[JP] + p->DZN[KP]);
+        temp = pheat->val(i,j,k) + 273.0;
+	    
+		epsi = p->F45*(1.0/3.0)*(p->DXN[IP] + p->DYN[JP] + p->DZN[KP]);
         
         
-		ro_air = (0.0035*(101325.0 + a->press(i,j,k)))  / (273.15 + p->W31);
-		
+        if(p->H9==1)
+        {
+	    ro_1 = p->W1 - p->W1*(temp - T0_1)/T0_1;
+	    ro_2 = p->W3 - p->W3*(temp - T0_2)/T0_2;
+
+	    visc_1 = p->W2;
+	    visc_2 = p->W4;
+        }
+        
+        if(p->H9==2)
+        {
+	    ro_1 = p->W3 - p->W3*(temp - T0_2)/T0_2;
+	    ro_2 = p->W1 - p->W1*(temp - T0_1)/T0_1;
+
+	    visc_1 = p->W4;
+        visc_2 = p->W2;
+        }
+
 		if(a->phi(i,j,k)>epsi)
 		H=1.0;
 
@@ -62,15 +103,9 @@ void fluid_update_fsf_comp::start(lexer *p, fdm* a, ghostcell* pgc)
 
 		if(fabs(a->phi(i,j,k))<=epsi)
 		H=0.5*(1.0 + a->phi(i,j,k)/epsi + (1.0/PI)*sin((PI*a->phi(i,j,k))/epsi));
-		
-		if(a->phi(i,j,k)>=0.0)
-		Hro=1.0;
 
-		if(a->phi(i,j,k)<0.0)
-		Hro=0.0;
-
-		a->ro(i,j,k)=     ro_water*H +   ro_air*(1.0-H);
-		a->visc(i,j,k)= visc_water*H + visc_air*(1.0-H);
+		a->ro(i,j,k)=      ro_1*H +   ro_2*(1.0-H);
+		a->visc(i,j,k)= visc_1*H + visc_2*(1.0-H);
 
 		p->volume1 += p->DXN[IP]*p->DYN[JP]*p->DZN[KP]*(H-(1.0-PORVAL4));
 		p->volume2 += p->DXN[IP]*p->DYN[JP]*p->DZN[KP]*(1.0-H-(1.0-PORVAL4));
@@ -82,7 +117,6 @@ void fluid_update_fsf_comp::start(lexer *p, fdm* a, ghostcell* pgc)
     a->visctot.V[I_J_K] = a->visc(i,j,k) + a->eddyv(i,j,k);
     ++n;
     }
-	
 
 	pgc->start4(p,a->ro,gcval_ro);
 	pgc->start4(p,a->visc,gcval_visc);
@@ -96,8 +130,8 @@ void fluid_update_fsf_comp::start(lexer *p, fdm* a, ghostcell* pgc)
 	cout<<"Volume 2: "<<p->volume2<<endl;
     }
     ++iocheck;
+
 }
 
-int fluid_update_fsf_comp::iocheck;
-int fluid_update_fsf_comp::iter;
-
+int fluid_update_fsf_heat_Bouss::iocheck;
+int fluid_update_fsf_heat_Bouss::iter;

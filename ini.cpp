@@ -122,9 +122,6 @@ void lexer::ini_default()
 	B75=1;		 // int type of outflow boundary conditions
 	B76=0;             // int fixed pressure inlet/outlet for ioflow and iowave
 	B77=1;           // int outflow pressure controlled or free stream
-	B78=1;           // int fixed pressure outlet for ioflow and iowave
-	B79=1.0;	 // double scale factor for pressure outflow
-	B80=-1.0e9;	 // double height threshold for pressure at outlet
 	B81=0;		 // int focussed wave parameter
     B81_3=0.0;    // double unidirectional focused wave y is condisered 0
     B82=1;      // int type of focus point and time calculation
@@ -263,8 +260,6 @@ void lexer::ini_default()
 	D11=2;			// int convection velocity scheme   
 	D20=1;			// int diffusion scheme
 	D21=0;			// int print out implicit diffusion time and iterations
-	D22=1;			// int turn on molecular diffusion in diffusion discretization for momentum equations
-	D23=1;			// int turn on molecular diffusion in diffusion discretization for turbulence equations
 	D29=1.0e-5;     // double stopping criteria implicit diffusion
 	D30=1;			// int pressure scheme
 	D32=2;			// int density calculation poisson equation
@@ -353,6 +348,7 @@ void lexer::ini_default()
 	// Heat
 	H1=1.4e-7;      // thermal diffusivity water
 	H2=2.216e-5;      // thermal diffusivity air
+    H3=1;            // type of density calculation
     H9=1;           // int air-water assignment    
 	H10=0;          // int heat transfer on/off
     H15=5;          // int convection for heat transfer
@@ -637,6 +633,7 @@ void lexer::ini_default()
 	W22=0.0;		// double gk
 	W30=0;			// int air compressibility on/off
 	W31=20.0;		// double temperature for air compressibility in celsius
+    W41=0;         // int velocity source phase 1
     W90=0;           // int non-newtownian flow
     W95=0.001;       // double nu_0
 	W96=1.0;         // double tau_0

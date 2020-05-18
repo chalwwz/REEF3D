@@ -20,6 +20,7 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 --------------------------------------------------------------------*/
 
 #include"driver.h"
+#include"driver.h"
 #include"lexer.h"
 #include"ghostcell.h"
 #include"freesurface_header.h"
@@ -90,7 +91,7 @@ void driver::logic()
 	pconvec=new weno3_hj(p);
     
     if(p->D10==9)
-	pconvec=new weno_flux(p);
+	pconvec=new weno_flux_nug_dir(p);
 	
 	if(p->D10>=10 && p->D10<30)
 	pconvec=new hires(p,p->D10);
@@ -365,7 +366,7 @@ void driver::logic()
     poneph = new onephase_v(p,a,pgc);
     
     if((p->F30==0 && p->F80==0) || p->F11==1)
-	pfsf = new levelset_void(p,a,pgc);
+	pfsf = new levelset_void(p,a,pgc,pheat,pconc);
 
 	if(p->F30==1)
 	pfsf = new levelset_AB2(p,a,pgc,pheat,pconc);
@@ -410,11 +411,11 @@ void driver::logic()
 	if(p->F40==23)
 	preini = new reini_RK3(p,1);
     
+    if(p->F40==24)
+	preini = new reini_RK4(p,a);
+    
     if(p->F40==33)
     preini = new reini_RK3_V(p,1);
-	
-	if(p->F40==14)
-	preini = new reini_RK4(p,a);
 	
 	if(p->F40==5)
 	preini = new reinivc_RK3(p);
@@ -673,6 +674,13 @@ void driver::logic()
     if(p->G40==3)
     preto = new reinitopo_RK3(p);
     }
+    
+    if(p->G39==0)
+    preso = new reinitopo_void(); 
+    
+    if(p->G39==1)
+    preso = new reinisolid_RK3(p);
+    
 
     if(p->S60==0)
     psusp = new suspended_void();

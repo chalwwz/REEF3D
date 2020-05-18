@@ -330,15 +330,6 @@ void lexer::read_control()
 			   case 77: control>>B77;
 						 clear(c,numint);
 						 break;
-			   case 78: control>>B78;
-						 clear(c,numint);
-						 break;
-			   case 79: control>>B79;
-						 clear(c,numint);
-						 break;
-			   case 80: control>>B80;
-						 clear(c,numint);
-						 break;
 			   case 81: control>>B81_1>>B81_3>>B81_2;
 						 B81=1;
 						 clear(c,numint);
@@ -646,12 +637,6 @@ void lexer::read_control()
 				case 21: control>>D21;
 						 clear(c,numint);
 						 break;
-				case 22: control>>D22;
-						 clear(c,numint);
-						 break;		 
-				case 23: control>>D23;
-						 clear(c,numint);
-						 break;
 				case 29: control>>D29;
 						 clear(c,numint);
 						 break;
@@ -866,7 +851,16 @@ void lexer::read_control()
         case 'H': control>>numint;
 				switch(numint)
 				{
-				 case 9: control>>H9;
+				 case 1: control>>H1;
+						 clear(c,numint);
+						 break;
+                case 2: control>>H2;
+						 clear(c,numint);
+						 break;
+                case 3: control>>H3;
+						 clear(c,numint);
+						 break;
+                case 9: control>>H9;
 						 clear(c,numint);
 						 break;
                 case 10: control>>H10;
@@ -1619,6 +1613,9 @@ void lexer::read_control()
 				case 31: control>>W31;
 						 clear(c,numint);
 						 break;
+               case 41: ++W41;
+						 clear(c,numint);
+						 break;
                 case 90: control>>W90;
 						 clear(c,numint);
 						 break;
@@ -2121,6 +2118,14 @@ void lexer::read_control()
 	Darray(S73_b,S73);
 	Darray(S73_x,S73);
 	Darray(S73_y,S73);	
+    
+    // W
+    Darray(W41_xc,W41);
+    Darray(W41_yc,W41);
+    Darray(W41_zs,W41);
+    Darray(W41_ze,W41);
+    Darray(W41_vel,W41);
+    Darray(W41_beta,W41);
 	
 	// X
 	Darray(X110_xs,X110);
@@ -2234,6 +2239,7 @@ void lexer::read_control()
 	int countP351=0;
 	int countP352=0;
 	int countS73=0;
+    int countW41=0;
 	int countX110=0;
     int countX163=0;
     int countX164=0;
@@ -2456,6 +2462,16 @@ void lexer::read_control()
 				{
 				case 73: control>>S73_val[countS73]>>S73_dist[countS73]>>S73_b[countS73]>>S73_x[countS73]>>S73_y[countS73];
                         ++countS73;
+						 clear(c,numint);
+						 break;
+				}
+				break;
+                
+            case 'W': control>>numint;
+				switch(numint)
+				{
+				case 41: control>>W41_xc[countW41]>>W41_yc[countW41]>>W41_zs[countW41]>>W41_ze[countW41]>>W41_vel[countW41]>>W41_beta[countW41];
+                        ++countW41;
 						 clear(c,numint);
 						 break;
 				}
