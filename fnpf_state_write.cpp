@@ -41,7 +41,7 @@ void fnpf_state::write(lexer *p, fdm_fnpf *c, ghostcell *pgc)
     if(p->P15>=1)
     num = printcount;
 
-    if(p->mpirank==4){
+    if(p->P45<0 || (p->P45>=0 && p->mpirank==p->P45)){
     
     // result file
     filename(p,c,pgc,num);
