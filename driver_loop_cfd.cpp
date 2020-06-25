@@ -45,6 +45,8 @@ void driver::loop_cfd(fdm* a)
     if(p->mpirank==0)
     cout<<"starting mainloop.CFD"<<endl;
     
+    //vec_test(p,a,pgc,a->test);
+    
 //-----------MAINLOOP CFD----------------------------
 	while(p->count<p->N45 && p->simtime<p->N41  && p->sedtime<p->S19)
 	{		
@@ -61,12 +63,6 @@ void driver::loop_cfd(fdm* a)
         
 		if(p->B90>0)
 		cout<<"t/T: "<<p->simtime/p->wT<<endl;
-
-        if(p->N48>2)
-        {
-        cout<<"veltimestep: "<<p->veltimestep<<endl;
-        cout<<"turbtimestep: "<<p->turbtimestep<<endl;
-        }
         }
         
         pflow->flowfile(p,a,pgc,pturb);

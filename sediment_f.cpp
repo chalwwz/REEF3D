@@ -31,6 +31,7 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 #include"bedload.h"
 #include"bedshear.h"
 #include"sandslide_f.h"
+#include"sandslide_f2.h"
 #include"sandslide_pde.h"
 #include"sandslide_v.h"
 #include"topo_relax.h"
@@ -47,6 +48,9 @@ sediment_f::sediment_f(lexer *p, fdm *a, ghostcell *pgc, turbulence *pturb):topo
     pslide=new sandslide_f(p);
     
     if(p->S90==2)
+    pslide=new sandslide_f2(p);
+    
+    if(p->S90==3)
     pslide=new sandslide_pde(p);
     
     if(p->S10!=2)
@@ -146,6 +150,13 @@ void sediment_f::sediment_algorithm(lexer *p, fdm *a, convection *pconvec, ghost
 
 	if(p->mpirank==0)
     cout<<"Sediment CompTime: "<<setprecision(5)<<pgc->timer()-starttime<<endl<<endl;
+    
+    
+    SLICELOOP4
+    a->bedload(i,j) = 0.5*(a->qbx(i,j) + a->qbx(i-1,j));
+    
+    ALOOP
+    a->test(i,j,k) = 0.5*(a->qby(i,j) + a->qby(i,j-1));
 }
 
 

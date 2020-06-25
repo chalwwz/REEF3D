@@ -54,10 +54,10 @@ void driver::logic()
     if(p->N48==0)
 	ptstep=new fixtimestep(p);
 
-    if((p->N48==1 || p->N48==3 || p->N48==4)  && (p->D20!=0&&p->D20!=2))
+    if((p->N48==1)  && (p->D20!=0&&p->D20!=2))
 	ptstep=new etimestep(p);
 	
-	if((p->N48==1 || p->N48==3 || p->N48==4) && (p->D20==0||p->D20>=2))
+	if((p->N48==1) && (p->D20==0||p->D20>=2))
 	ptstep=new ietimestep(p);
 
 //discretization scheme
@@ -318,7 +318,7 @@ void driver::logic()
 	pheatdisc=new hires(p,p->H15);
 	
 // Concentration
-    if(p->C10==0 && p->F101==0)
+    if(p->C10==0)
 	pconc =  new concentration_void(p,a,pgc);
 
 	if(p->C10==1)
@@ -329,13 +329,6 @@ void driver::logic()
 
 	if(p->C10==3)
 	pconc =  new concentration_RK3(p,a,pgc);
-
-// Air Entrainment
-    if(p->F101==1)
-	{
-	pconcdisc=new iweno_hj(p);
-	pconcdiff=new idiff2(p);
-	}
     
 // Wave Models
     if(p->A10==5 || p->A10==0)
@@ -377,45 +370,15 @@ void driver::logic()
 	if(p->F30==3 && p->F11==0)
 	pfsf = new levelset_RK3(p,a,pgc,pheat,pconc);
 	
-	if(p->F30==4)
-	pfsf = new levelset_RK4(p,a,pgc,pheat,pconc);	
-	
-	if(p->F30==5)
-	pfsf = new levelset_AB3(p,a,pgc,pheat,pconc);
-    
-    if(p->F30==33 && p->F11==0)
-	pfsf = new levelset_RK3_V(p,a,pgc,pheat,pconc);
-    
 
 	if(p->F40==0)
 	preini = new reini_void(p);
-    
-    if(p->F40==1)
-	preini = new reinifluid_AB2(p,a);
-	
-	if(p->F40==2)
-	preini = new reinifluid_AB3(p,a);
 	
     if(p->F40==3)
     preini = new reinifluid_RK3(p,1);
 	
-	if(p->F40==4)
-	preini = new reinifluid_RK4(p,a);
-    
-	if(p->F40==21)
-	preini = new reini_AB2(p,a);
-	
-	if(p->F40==22)
-	preini = new reini_AB3(p,a);
-	
 	if(p->F40==23)
 	preini = new reini_RK3(p,1);
-    
-    if(p->F40==24)
-	preini = new reini_RK4(p,a);
-    
-    if(p->F40==33)
-    preini = new reini_RK3_V(p,1);
 	
 	if(p->F40==5)
 	preini = new reinivc_RK3(p);
@@ -423,11 +386,7 @@ void driver::logic()
 	if(p->F40==7)
 	preini = new reinigc_RK3(p,a);
 	
-	if(p->F40==8)
-	preini = new reinigc_RK4(p,a);
-	
-
-	if(p->F40==11 || p->F40==13 || p->F40==14)
+	if(p->F40==11)
 	preini = new directreini(p,a);
 
 
@@ -548,33 +507,21 @@ void driver::logic()
 	ppois = new poisson_nse(p,pheat,pconc);
 	
 //Solver
-	if(p->N8==0)
-	psolv = new solver_void(p,a,pgc);
-	
-	if(p->N8==1)
-	psolv = new jacobi_block(p,a,pgc);
-	
-	if(p->N8==2)
-	psolv = new sip(p,a,pgc);
-	
-	if(p->N8==3 && p->j_dir==0)
-	psolv = new bicgstab_2D(p,a,pgc,p->N9);
+    if(p->j_dir==0)
+	psolv = new bicgstab_ijk_2D(p,a,pgc);
     
-    if(p->N8==3 && p->j_dir==1)
-	psolv = new bicgstab(p,a,pgc,p->N9);
+    if(p->j_dir==1)
+	psolv = new bicgstab_ijk(p,a,pgc);
 
 //Poison Solver	
 	if(p->N10==0)
 	ppoissonsolv = new solver_void(p,a,pgc);
-	
-	if(p->N10==1)
-	ppoissonsolv = new jacobi_block(p,a,pgc);
-	
-	if(p->N10==2)
-	ppoissonsolv = new sip(p,a,pgc);
-	
-	if(p->N10==3)
-	ppoissonsolv = new bicgstab(p,a,pgc,p->N11);
+    
+    if(p->N10==1 && p->j_dir==0)
+	ppoissonsolv = new bicgstab_ijk_2D(p,a,pgc);
+    
+    if(p->N10==1 && p->j_dir==1)
+	ppoissonsolv = new bicgstab_ijk(p,a,pgc);
 	
 	#ifdef HYPRE_COMPILATION
 	if(p->N10>=10 && p->N10<20)
@@ -710,15 +657,9 @@ void driver::logic()
 	if(p->N40==3 && p->F11==0)
 	pmom = new momentum_RK3(p,a,pconvec,pdiff,ppress,ppois,pturb,psolv,ppoissonsolv,pflow);
     
-	if(p->N40==4)
-	pmom = new momentum_RK4(p,a,pconvec,pdiff,ppress,ppois,pturb,psolv,ppoissonsolv,pflow);
-
 	if(p->N40==6 && p->F11==0)
 	pmom = new momentum_FS3(p,a,pconvec,pdiff,ppress,ppois,pturb,psolv,ppoissonsolv,pflow);
     
-	if(p->N40==7)
-	pmom = new momentum_FS4(p,a,pconvec,pdiff,ppress,ppois,pturb,psolv,ppoissonsolv,pflow);
-
 	if(p->N40==0 && p->X10==1 && p->X13==1)
 	pmom = new momentum_FSI(p,a,pconvec,pdiff,ppress,ppois,pturb,psolv,ppoissonsolv,pflow);
 	

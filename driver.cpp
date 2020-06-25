@@ -34,9 +34,9 @@ driver::driver(int& argc, char **argv)
 
 	if(p->mpirank==0)
     {
-    cout<<endl<<"REEF3D (c) 2008-2020 Hans Bihs"<<endl;
+    cout<<endl<<"REEF3D_X (c) 2008-2020 Hans Bihs"<<endl;
     cout<<endl<<":: Open-Source Hydrodynamics" <<endl;
-    cout<<endl<<"v_200506" <<endl<<endl;
+    cout<<endl<<"v_200621" <<endl<<endl;
     }
 
 	p->lexer_read(pgc);
